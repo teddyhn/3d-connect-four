@@ -2,13 +2,18 @@ import React, { useState, useEffect } from "react"
 // R3F
 import { Canvas } from "react-three-fiber"
 // Drei - R3F
-import { softShadows, OrbitControls, Box, Sphere } from "drei"
+import { softShadows, OrbitControls } from "drei"
+// Hooks
+import useHover from "./hooks/useHover"
 // Components
 import Header from "./components/Header"
+import Tile from "./components/Tile"
+import Ball from "./components/Ball"
+import Outline from "./components/Outline"
 // Styles
 import "./App.scss"
 
-// soft Shadows
+// Soft Shadows
 softShadows()
 
 const createGrid = (gridSize) => {
@@ -38,6 +43,8 @@ const updateGrid = (grid = [], ball = {}) => {
   return grid
 }
 
+export const context = React.createContext()
+
 const App = () => {
   const [grid, setGrid] = useState([])
   const [color, setColor] = useState("blue")
@@ -59,7 +66,9 @@ const App = () => {
     <>
       <Header />
       <Canvas
+        colorManagement
         shadowMap
+        pixelRatio={window.devicePixelRatio}
         camera={{ position: [0, 4, 10], fov: 60 }}>
         <ambientLight intensity={1.5} />
         <directionalLight
@@ -84,25 +93,23 @@ const App = () => {
             <shadowMaterial attach="material" opacity={0.3} />
           </mesh>
 
-          {/* Renders game board/tiles */}
-          {grid.map((row, i) => 
-            row.map((tile, j) => 
-              <Box onClick={e => handleClick(e, i, j)} key={`${i}, ${j}`} args={[1, 0.25, 1]} position={[j - 3, 0, i - 3]} receiveShadow>
-                { (j % 2) === (i % 2) ? <meshBasicMaterial attach="material" color="gray" /> : <meshBasicMaterial attach="material" color="white" /> }
-              </Box>
-            )
-          )}
-
-          {/* Renders game pieces/balls */}
-          {grid.map((row, i) => 
-            row.map((tile, j) => 
-              tile.map((item, k) => 
-                <Sphere onClick={e => handleClick(e, j, i)} key={`${i},${j},${k}`} castShadow args={[0.4, 64, 64]} position={[i - 3, k + 0.6125, j - 3]}>
-                    <meshPhongMaterial attach="material" color={item} emissive={0x444444} />
-                </Sphere>
+          <Outline>
+            {/* Renders game board/tiles */}
+            {grid.map((row, i) => 
+              row.map((tile, j) => 
+                <Tile key={`${i}, ${j}`} i={i} j={j} handleClick={handleClick} useHover={useHover} />
               )
-            )
-          )}
+            )}
+
+            {/* Renders game pieces/balls */}
+            {grid.map((row, i) => 
+              row.map((tile, j) => 
+                tile.map((item, k) => 
+                  <Ball key={`${i},${j},${k}`} i={i} j={j} k={k} item={item} handleClick={handleClick} useHover={useHover} />
+                )
+              )
+            )}
+          </Outline>
           
         </group>
         <OrbitControls />
@@ -111,4 +118,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App
