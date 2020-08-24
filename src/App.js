@@ -91,7 +91,7 @@ const App = () => {
             </Box>
           ))}
 
-          <Balls grid={grid} />
+          <Balls grid={grid} handleClick={handleClick} />
           
         </group>
         <OrbitControls />
