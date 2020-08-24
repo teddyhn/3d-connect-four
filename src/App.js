@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react"
 // R3F
 import { Canvas } from "react-three-fiber"
 // Drei - R3F
-import { softShadows, OrbitControls, Box } from "drei"
+import { softShadows, OrbitControls, Box, Sphere } from "drei"
 // Components
-import Header from "./components/Header.js"
-import Balls from "./components/Balls.js"
+import Header from "./components/Header"
 // Styles
 import "./App.scss"
 
@@ -85,13 +84,25 @@ const App = () => {
             <shadowMaterial attach="material" opacity={0.3} />
           </mesh>
 
-          {grid.map((row, i) => row.map((tile, j) => 
-            <Box onClick={e => handleClick(e, i, j)} key={`${i}, ${j}`} args={[1, 0.25, 1]} position={[j - 3, 0, i - 3]} receiveShadow>
-              { (j % 2) === (i % 2) ? <meshBasicMaterial attach="material" color="gray" /> : <meshBasicMaterial attach="material" color="white" /> }
-            </Box>
-          ))}
+          {/* Renders game board/tiles */}
+          {grid.map((row, i) => 
+            row.map((tile, j) => 
+              <Box onClick={e => handleClick(e, i, j)} key={`${i}, ${j}`} args={[1, 0.25, 1]} position={[j - 3, 0, i - 3]} receiveShadow>
+                { (j % 2) === (i % 2) ? <meshBasicMaterial attach="material" color="gray" /> : <meshBasicMaterial attach="material" color="white" /> }
+              </Box>
+            )
+          )}
 
-          <Balls grid={grid} handleClick={handleClick} />
+          {/* Renders game pieces/balls */}
+          {grid.map((row, i) => 
+            row.map((tile, j) => 
+              tile.map((item, k) => 
+                <Sphere onClick={e => handleClick(e, j, i)} key={`${i},${j},${k}`} castShadow args={[0.4, 64, 64]} position={[i - 3, k + 0.6125, j - 3]}>
+                    <meshPhongMaterial attach="material" color={item} emissive={0x444444} />
+                </Sphere>
+              )
+            )
+          )}
           
         </group>
         <OrbitControls />
