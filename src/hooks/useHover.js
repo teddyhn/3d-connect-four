@@ -6,8 +6,8 @@ function useHover(e) {
     const setHovered = useContext(context)
     const onPointerOver = e = useCallback((e) => {
         e.stopPropagation()
-        return setHovered(state => [...state, ref.current]), [setHovered]
-    })
+        return setHovered(state => [...state, ref.current])
+    }, [setHovered])
     const onPointerOut = useCallback(() => setHovered(state => state.filter(mesh => mesh !== ref.current)), [setHovered])
     return { ref, onPointerOver, onPointerOut }
 }

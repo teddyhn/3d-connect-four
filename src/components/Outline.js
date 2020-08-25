@@ -32,7 +32,7 @@ const Outline = ({ children }) => {
             visibleEdgeColor="white"
             hiddenEdgeColor="white"
             pulsePeriod={2}
-            edgeStrength={5}
+            edgeStrength={3}
             edgeThickness={1}
           />
           <shaderPass attachArray="passes" args={[FXAAShader]} uniforms-resolution-value={[1 / size.width, 1 / size.height]} />

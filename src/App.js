@@ -5,6 +5,8 @@ import { Canvas } from "react-three-fiber"
 import { softShadows, OrbitControls } from "drei"
 // Hooks
 import useHover from "./hooks/useHover"
+// Utils
+import checkWin from "./utils/checkWin"
 // Components
 import Header from "./components/Header"
 import Tile from "./components/Tile"
@@ -60,6 +62,13 @@ const App = () => {
     color === "blue" ? setColor("red") : setColor("blue")
 
     setGrid(updateGrid(grid, { row: j, column: i, color: color }))
+
+    if (checkWin(grid, color)) {
+      alert(`${color} won!`)
+      setTimeout(() => {
+        setGrid(createGrid(7))
+      }, 2500)
+    }
   }
 
   return (
