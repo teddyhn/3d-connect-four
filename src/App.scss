@@ -1,4 +1,4 @@
-$black: #2a2a24;
+$white: #f1f4f8;
 
 * {
   box-sizing: border-box;
@@ -33,7 +33,7 @@ body {
     helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
   color: black;
   -webkit-font-smoothing: antialiased;
-  background: #f1f4f8;
+  background: #272730;
 }
 
 // header
@@ -46,7 +46,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: $black;
+  color: $white;
   .logo {
     span {
       font-size: 1rem;
