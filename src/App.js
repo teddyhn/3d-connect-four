@@ -29,8 +29,10 @@ const createGrid = (gridSize) => {
     
   // Loop to initialize 2D array elements. 
   for (let i = 0; i < gridSize; i++) { 
-    for (let j = 0; j < gridSize; j++) { 
-      grid[i][j] = [] 
+    for (let j = 0; j < gridSize; j++) {
+      if (i === 3 && j === 3) grid[i][j] = ["white"]
+
+      else grid[i][j] = [] 
     } 
   }
 
@@ -57,7 +59,13 @@ const App = () => {
   }, [])
 
   const handleClick = (e, i, j) => {
+    console.log(i, j)
+
     e.stopPropagation()
+
+    if (grid[j][i].length >= 4) {
+      return
+    }
 
     color === "blue" ? setColor("red") : setColor("blue")
 
@@ -82,7 +90,7 @@ const App = () => {
         <ambientLight intensity={1.5} />
         <directionalLight
           castShadow
-          position={[-7, 10, 10]}
+          position={[0, 10, 0]}
           intensity={1.5}
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
