@@ -1,13 +1,11 @@
-import React from "react"
+import React from 'react'
 
-const Header = () => {
+const Header = ({ roomID }) => {
   return (
-    <header>
-      <div className='logo'>
-        <span>3D CONNECT FOUR</span>
-      </div>
+    <header className='absolute pl-8 pt-6 font-medium'>
+      <span>{roomID}</span>
     </header>
-  );
-};
+  )
+}
 
 export default Header

@@ -7,13 +7,13 @@ import { softShadows, OrbitControls } from "drei"
 import useHover from "./hooks/useHover"
 // Utils
 import checkWin from "./utils/checkWin"
+import { joinRoom, createRoom, disconnect, subscribe } from "./utils/socket"
 // Components
 import Header from "./components/Header"
+import Menu from "./components/Menu"
 import Tile from "./components/Tile"
 import Ball from "./components/Ball"
 import Outline from "./components/Outline"
-// Styles
-import "./App.scss"
 
 // Soft Shadows
 softShadows()
@@ -49,14 +49,30 @@ const updateGrid = (grid = [], ball = {}) => {
 
 export const context = React.createContext()
 
-const App = () => {
+const App = ({ match }) => {
   const [grid, setGrid] = useState([])
   const [color, setColor] = useState("blue")
+  const [roomID, setRoomID] = useState("")
 
-  // Initialize grid on render
   useEffect(() => {
+    // Initialize grid on render
     setGrid(updateGrid())
-  }, [])
+
+    if (match) {
+      setRoomID(match.params.id)
+      joinRoom(match.params.id)
+    }
+
+    else createRoom()
+
+    subscribe((err, data) => {
+      if (err) return
+
+      setRoomID(data.id)
+    })
+
+    return () => disconnect()
+  }, [match])
 
   const handleClick = (e, i, j) => {
     console.log(i, j)
@@ -81,7 +97,8 @@ const App = () => {
 
   return (
     <>
-      <Header />
+      <Header roomID={roomID} />
+      <Menu />
       <Canvas
         colorManagement
         shadowMap

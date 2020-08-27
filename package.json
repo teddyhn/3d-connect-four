@@ -7,18 +7,22 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "drei": "^1.2.0",
+    "node-sass": "^4.14.1",
     "react": "^16.13.1",
+    "react-animate-height": "^2.0.23",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-three-fiber": "^4.2.20",
-    "sass": "^1.26.10",
+    "socket.io-client": "^2.3.0",
     "three": "^0.119.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run build:css && react-scripts start",
+    "build": "npm run build:css && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:css": "postcss src/styles/tailwind.scss -o src/styles/index.scss"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -34,5 +38,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "postcss-cli": "^7.1.1",
+    "tailwindcss": "^1.7.5"
   }
 }
