@@ -7,7 +7,7 @@ import { softShadows, OrbitControls } from "drei"
 import useHover from "./hooks/useHover"
 // Utils
 import checkWin from "./utils/checkWin"
-import { joinRoom, createRoom, disconnect, subscribe } from "./utils/socket"
+import { joinRoom, disconnect, subscribe } from "./utils/socket"
 // Components
 import Header from "./components/Header"
 import Menu from "./components/Menu"
@@ -53,6 +53,7 @@ const App = ({ match }) => {
   const [grid, setGrid] = useState([])
   const [color, setColor] = useState("blue")
   const [roomID, setRoomID] = useState("")
+  const [showMenu, setShowMenu] = useState(true)
 
   useEffect(() => {
     // Initialize grid on render
@@ -62,8 +63,6 @@ const App = ({ match }) => {
       setRoomID(match.params.id)
       joinRoom(match.params.id)
     }
-
-    else createRoom()
 
     subscribe((err, data) => {
       if (err) return
@@ -95,10 +94,17 @@ const App = ({ match }) => {
     }
   }
 
+  const toggleShowMenu = () => {
+    setShowMenu(!showMenu)
+  }
+
   return (
     <>
       <Header roomID={roomID} />
-      <Menu />
+      {showMenu
+        ? <Menu toggleShowMenu={toggleShowMenu} roomID={roomID} setRoomID={setRoomID} />
+        : null
+      }
       <Canvas
         colorManagement
         shadowMap
@@ -149,7 +155,7 @@ const App = ({ match }) => {
         <OrbitControls />
       </Canvas>
     </>
-  );
-};
+  )
+}
 
 export default App
