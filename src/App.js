@@ -227,7 +227,12 @@ const App = () => {
           </Outline>
           
         </group>
-        <OrbitControls />
+        <OrbitControls
+          enablePan={false}
+          minDistance={7.5}
+          maxDistance={15}
+          maxPolarAngle={Math.PI/2.25}
+        />
       </Canvas>
     </>
   )
