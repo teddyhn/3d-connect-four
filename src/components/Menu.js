@@ -1,22 +1,13 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useRef } from "react"
 import AnimateHeight from "react-animate-height"
 import { CircularProgress } from "@material-ui/core"
-import Icon from "@material-ui/core/Icon"
 
-import { createRoom, subscribe } from "../utils/socket"
+import { createRoom } from "../utils/socket"
 
-const Menu = ({ toggleShowMenu, roomID, setRoomID }) => {
+const Menu = ({ setShowMenu, setCurrentTurn, roomID, setLocalGameStart }) => {
     const [height, setHeight] = useState(0)
     const [copySuccess, setCopySuccess] = useState("")
     const inputRef = useRef(null)
-
-    useEffect(() => {
-        subscribe((err, data) => {
-            if (err) return
-      
-            setRoomID(data.id)
-        })
-    }, [height, setRoomID])
 
     const handleOpen = () => {
         setHeight("auto")
@@ -36,6 +27,12 @@ const Menu = ({ toggleShowMenu, roomID, setRoomID }) => {
         setCopySuccess("Copied!")
     }
 
+    const handleLocalPlay = () => {
+        setShowMenu(false)
+        setCurrentTurn(true)
+        setLocalGameStart(true)
+    }
+
     return (
         <div className="absolute w-full h-full flex items-center">
             <div className="z-10 mx-auto bg-white text-gray-800 shadow-lg py-6 px-12 rounded flex flex-col items-center">
@@ -51,7 +48,7 @@ const Menu = ({ toggleShowMenu, roomID, setRoomID }) => {
                           </button>
                     }
                     {height === 0
-                        ? <button onClick={toggleShowMenu} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
+                        ? <button onClick={handleLocalPlay} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
                             Local Play (Demo)
                           </button>
                         : <button className="bg-blue-500 text-white font-bold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
@@ -66,7 +63,7 @@ const Menu = ({ toggleShowMenu, roomID, setRoomID }) => {
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
                         <div className="flex w-full mb-4">
                             <input ref={inputRef} className="focus:outline-none text-blue-500 w-full pb-1 border-b-2 mr-4" value={`http://localhost:3000/${roomID}`} readOnly></input>
-                            {document.queryCommandSupported('copy') && <Icon onClick={copyToClipboard} className="far fa-copy cursor-pointer hover:text-blue-700" color="inherit" />}
+                            {document.queryCommandSupported('copy') && <button onClick={copyToClipboard} className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-semibold py-1 px-2 border border-gray-400 rounded focus:outline-none">Copy</button>}
                         </div>
                         <button onClick={handleClose} className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded focus:outline-none">
                             Cancel
