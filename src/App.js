@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useParams } from "react-router-dom"
 // R3F
 import { Canvas } from "react-three-fiber"
 // Drei - R3F
@@ -7,13 +8,15 @@ import { softShadows, OrbitControls } from "drei"
 import useHover from "./hooks/useHover"
 // Utils
 import checkWin from "./utils/checkWin"
+import { socket, joinRoom, disconnect, checkValidRoom, playerTurn } from "./utils/socket"
 // Components
 import Header from "./components/Header"
+import Menu from "./components/Menu"
+import GameEnd from "./components/GameEnd"
+import LocalGameEnd from "./components/LocalGameEnd"
 import Tile from "./components/Tile"
 import Ball from "./components/Ball"
 import Outline from "./components/Outline"
-// Styles
-import "./App.scss"
 
 // Soft Shadows
 softShadows()
@@ -52,36 +55,131 @@ export const context = React.createContext()
 const App = () => {
   const [grid, setGrid] = useState([])
   const [color, setColor] = useState("blue")
+  const [roomID, setRoomID] = useState("")
+  const [showMenu, setShowMenu] = useState(true)
+  const [updated, setUpdated] = useState(0)
+  const [gameStart, setGameStart] = useState(false)
+  const [currentTurn, setCurrentTurn] = useState(false)
 
-  // Initialize grid on render
+  const [singlePlayer, setSinglePlayer] = useState(true)
+  const [localGameStart, setLocalGameStart] = useState(false)
+  const [localGameEnd, setLocalGameEnd] = useState(false)
+
+  const [gameEnd, setGameEnd] = useState(false)
+  const [gameWon, setGameWon] = useState(false)
+
+  const { id } = useParams()
+
   useEffect(() => {
+    // Initialize grid on render
     setGrid(updateGrid())
-  }, [])
+
+    if (id) {
+      setRoomID(id)
+      joinRoom(id)
+      checkValidRoom(id)
+      setColor("red")
+      setSinglePlayer(false)
+    }
+
+    return () => disconnect()
+  }, [id])
+
+  const getOppositeColor = (color) => {
+    if (color === "blue") return "red"
+    else return "blue"
+  }
+
+  // Check for wins in local mode
+  useEffect(() => {
+    if (singlePlayer && currentTurn) {
+      if (checkWin(grid, getOppositeColor(color))) {
+        setLocalGameEnd(true)
+        setLocalGameStart(false)
+        setCurrentTurn(false)
+      }
+    }
+  }, [grid, color, currentTurn, singlePlayer])
+
+  // Handle socket.io events
+  useEffect(() => {
+    socket.once("roomCreated", (data) => {
+      setRoomID(data.id)
+    })
+
+    socket.once("startGame", () => {
+      setShowMenu(false)
+      setSinglePlayer(false)
+    })
+
+    socket.once("validRoom", () => {
+      setShowMenu(false)
+      setGameStart(true)
+    })
+
+    socket.off("yourTurn").on("yourTurn", () => {
+      setCurrentTurn(true)
+    })
+
+    socket.off("playerTurn").on("playerTurn", (data) => {
+      setGrid(updateGrid(grid, data))
+      setUpdated(Date.now())
+    })
+
+    socket.off("gameWon").on("gameWon", (data) => {
+      setGameEnd(true)
+      setGameStart(false)
+
+      data === color ? setGameWon(true) : setGameWon(false)
+    })
+  })
 
   const handleClick = (e, i, j) => {
-    console.log(i, j)
-
     e.stopPropagation()
+
+    if (!currentTurn) return
 
     if (grid[j][i].length >= 4) {
       return
     }
 
-    color === "blue" ? setColor("red") : setColor("blue")
-
-    setGrid(updateGrid(grid, { row: j, column: i, color: color }))
-
-    if (checkWin(grid, color)) {
-      alert(`${color} won!`)
-      setTimeout(() => {
-        setGrid(createGrid(7))
-      }, 2500)
+    if (singlePlayer) {
+      color === "blue" ? setColor("red") : setColor("blue")
+      setGrid(updateGrid(grid, { row: j, column: i, color: color, timestamp: Date.now() }))
     }
+
+    else {
+      setCurrentTurn(false)
+      playerTurn(roomID, { row: j, column: i, color: color, timestamp: Date.now() })
+    }
+
+    // Triggers re-render for balls
+    setUpdated(Date.now())
+  }
+
+  const resetBoard = () => {
+    setGameEnd(false)
+    setLocalGameEnd(false)
+    setShowMenu(true)
+    setGrid(updateGrid())
+    setRoomID("")
   }
 
   return (
     <>
-      <Header />
+      <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} singlePlayer={singlePlayer} />
+      {showMenu
+        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
+        : null
+      }
+      {gameEnd
+        ? <GameEnd gameWon={gameWon} resetBoard={resetBoard} />
+        : null
+      }
+      {localGameEnd
+        ? <LocalGameEnd color={getOppositeColor(color)} resetBoard={resetBoard} />
+        : null
+      }
       <Canvas
         colorManagement
         shadowMap
@@ -122,7 +220,7 @@ const App = () => {
             {grid.map((row, i) => 
               row.map((tile, j) => 
                 tile.map((item, k) => 
-                  <Ball key={`${i},${j},${k}`} i={i} j={j} k={k} item={item} handleClick={handleClick} useHover={useHover} />
+                  <Ball key={`${i},${j},${k}`} i={i} j={j} k={k} item={item} handleClick={handleClick} useHover={useHover} updated={updated} />
                 )
               )
             )}
@@ -132,7 +230,7 @@ const App = () => {
         <OrbitControls />
       </Canvas>
     </>
-  );
-};
+  )
+}
 
 export default App
