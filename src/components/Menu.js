@@ -4,7 +4,7 @@ import { CircularProgress } from "@material-ui/core"
 
 import { createRoom } from "../utils/socket"
 
-const Menu = ({ setShowMenu, setCurrentTurn, roomID, setLocalGameStart }) => {
+const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart }) => {
     const [height, setHeight] = useState(0)
     const [copySuccess, setCopySuccess] = useState("")
     const inputRef = useRef(null)
@@ -17,6 +17,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setLocalGameStart }) => {
     const handleClose = () => {
         setHeight(0)
         setCopySuccess("")
+        setRoomID("")
     }
 
     const copyToClipboard = (e) => {

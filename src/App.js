@@ -96,6 +96,7 @@ const App = () => {
       if (checkWin(grid, getOppositeColor(color))) {
         setLocalGameEnd(true)
         setLocalGameStart(false)
+        setCurrentTurn(false)
       }
     }
   }, [grid, color, currentTurn, singlePlayer])
@@ -168,7 +169,7 @@ const App = () => {
     <>
       <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} singlePlayer={singlePlayer} />
       {showMenu
-        ? <Menu roomID={roomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
+        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
         : null
       }
       {gameEnd
