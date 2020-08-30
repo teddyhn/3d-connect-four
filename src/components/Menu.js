@@ -61,13 +61,13 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                     }
                 </div>
                 <AnimateHeight height={height} className="w-full">
-                    <div className="flex flex-col items-center text-blue-600">
+                    <div className="flex flex-col items-center">
                         <CircularProgress color={"inherit"} size={28} thickness={5.4} />
                         <span className="text-sm text-gray-800 mt-2 mb-4">Waiting for a player to join</span>
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
                         <div className="flex items-center w-full mb-4">
                             <input ref={inputRef} className="focus:outline-none text-blue-500 w-full pb-1 border-b-2 mr-4" value={`http://localhost:3000/${roomID}`} readOnly></input>
-                            {document.queryCommandSupported('copy') && <FontAwesomeIcon onClick={copyToClipboard} className="cursor-pointer text-xl" icon={faCopy} />}
+                            {document.queryCommandSupported('copy') && <FontAwesomeIcon onClick={copyToClipboard} className="cursor-pointer text-2xl text-blue-600 hover:text-blue-700" icon={faCopy} />}
                         </div>
                         <button onClick={handleClose} className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded focus:outline-none">
                             Cancel

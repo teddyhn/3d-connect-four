@@ -1,6 +1,8 @@
 import React from "react"
 import { useHistory } from "react-router-dom"
 import { socket } from "../utils/socket"
+import { faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const GameEnd = ({ gameWon, gameAbandoned, resetBoard, roomID }) => {
     const history = useHistory()
@@ -43,7 +45,7 @@ const GameEnd = ({ gameWon, gameAbandoned, resetBoard, roomID }) => {
                           </button>
                     }
                     <button onClick={handleBack} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
-                        Back to Menu
+                        <FontAwesomeIcon icon={faLongArrowAltLeft}></FontAwesomeIcon> Menu
                     </button>
                 </div>
             </div>
