@@ -2,6 +2,9 @@ import React, { useState, useRef } from "react"
 import AnimateHeight from "react-animate-height"
 import { CircularProgress } from "@material-ui/core"
 
+import { faCopy } from "@fortawesome/free-regular-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
 import { createRoom } from "../utils/socket"
 
 const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart }) => {
@@ -62,9 +65,9 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         <CircularProgress color={"inherit"} size={28} thickness={5.4} />
                         <span className="text-sm text-gray-800 mt-2 mb-4">Waiting for a player to join</span>
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
-                        <div className="flex w-full mb-4">
+                        <div className="flex items-center w-full mb-4">
                             <input ref={inputRef} className="focus:outline-none text-blue-500 w-full pb-1 border-b-2 mr-4" value={`http://localhost:3000/${roomID}`} readOnly></input>
-                            {document.queryCommandSupported('copy') && <button onClick={copyToClipboard} className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-semibold py-1 px-2 border border-gray-400 rounded focus:outline-none">Copy</button>}
+                            {document.queryCommandSupported('copy') && <FontAwesomeIcon onClick={copyToClipboard} className="cursor-pointer text-xl" icon={faCopy} />}
                         </div>
                         <button onClick={handleClose} className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded focus:outline-none">
                             Cancel

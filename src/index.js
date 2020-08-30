@@ -7,10 +7,8 @@ import App from './App'
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <Route exact path="/">
-        <App />
-      </Route>
-      <Route path='/:id' render={props => {
+      {/* id set as optional parameter */}
+      <Route path='/:id?' render={props => {
         return ( <App {...props} /> )
       }} />
     </Router>
