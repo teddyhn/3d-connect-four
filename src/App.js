@@ -8,7 +8,7 @@ import { softShadows, OrbitControls } from "drei"
 import useHover from "./hooks/useHover"
 // Utils
 import checkWin from "./utils/checkWin"
-import { socket, joinRoom, disconnect, checkValidRoom, playerTurn } from "./utils/socket"
+import { socket, joinRoom, checkValidRoom, playerTurn } from "./utils/socket"
 // Components
 import Header from "./components/Header"
 import Menu from "./components/Menu"
@@ -81,8 +81,6 @@ const App = () => {
       setColor("red")
       setLocalGameStart(false)
     }
-
-    return () => disconnect()
   }, [id])
 
   const getOppositeColor = (color) => {
