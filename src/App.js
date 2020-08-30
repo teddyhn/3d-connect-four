@@ -68,6 +68,7 @@ const App = () => {
 
   const [gameEnd, setGameEnd] = useState(false)
   const [gameWon, setGameWon] = useState(false)
+  const [gameAbandoned, setGameAbandoned] = useState(false)
 
   const { id } = useParams()
 
@@ -121,6 +122,10 @@ const App = () => {
       setInvalidRoom(true)
     })
 
+    socket.once("assignColor", (data) => {
+      setColor(data.color)
+    })
+
     socket.off("yourTurn").on("yourTurn", () => {
       setCurrentTurn(true)
     })
@@ -135,6 +140,11 @@ const App = () => {
       setGameStart(false)
 
       data === color ? setGameWon(true) : setGameWon(false)
+    })
+
+    socket.off("roomAbandoned").on("roomAbandoned", () => {
+      socket.emit("leaveRoom", roomID)
+      setGameAbandoned(true)
     })
   })
 
@@ -162,7 +172,9 @@ const App = () => {
   }
 
   const resetBoard = () => {
+    setGameStart(false)
     setGameEnd(false)
+    setGameAbandoned(false)
     setLocalGameEnd(false)
     setInvalidRoom(false)
     setShowMenu(true)
@@ -177,8 +189,8 @@ const App = () => {
         ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
         : null
       }
-      {gameEnd
-        ? <GameEnd gameWon={gameWon} resetBoard={resetBoard} />
+      {gameEnd || gameAbandoned
+        ? <GameEnd gameWon={gameWon} gameAbandoned={gameAbandoned} resetBoard={resetBoard} roomID={roomID} />
         : null
       }
       {localGameEnd

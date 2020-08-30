@@ -47,7 +47,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         ? <button onClick={handleOpen} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
                             Invite a Friend
                           </button>
-                        : <button className="bg-blue-500 text-white font-bold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
+                        : <button className="bg-blue-500 text-white font-semibold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
                             Invite a Friend
                           </button>
                     }
@@ -55,7 +55,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         ? <button onClick={handleLocalPlay} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
                             Local Play (Demo)
                           </button>
-                        : <button className="bg-blue-500 text-white font-bold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
+                        : <button className="bg-blue-500 text-white font-semibold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
                             Local Play (Demo)
                           </button>
                     }
