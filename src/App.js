@@ -12,6 +12,7 @@ import { socket, joinRoom, checkValidRoom, playerTurn } from "./utils/socket"
 // Components
 import Header from "./components/Header"
 import Menu from "./components/Menu"
+import GameJoin from "./components/GameJoin"
 import GameEnd from "./components/GameEnd"
 import LocalGameEnd from "./components/LocalGameEnd"
 import InvalidRoom from "./components/InvalidRoom"
@@ -66,6 +67,7 @@ const App = () => {
   const [localGameStart, setLocalGameStart] = useState(false)
   const [localGameEnd, setLocalGameEnd] = useState(false)
 
+  const [gameJoin, setGameJoin] = useState(false)
   const [gameEnd, setGameEnd] = useState(false)
   const [gameWon, setGameWon] = useState(false)
   const [gameAbandoned, setGameAbandoned] = useState(false)
@@ -118,6 +120,11 @@ const App = () => {
       setRoomID(data.id)
       setShowMenu(false)
       setGameStart(true)
+
+      setGameJoin(true)
+      setTimeout(() => {
+        setGameJoin(false)
+      }, 2000)
     })
 
     socket.once("invalidRoom", () => {
@@ -198,6 +205,10 @@ const App = () => {
       <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} />
       {!id && showMenu
         ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} gameStart={gameStart} />
+        : null
+      }
+      {gameJoin
+        ? <GameJoin />
         : null
       }
       {gameEnd || gameAbandoned
