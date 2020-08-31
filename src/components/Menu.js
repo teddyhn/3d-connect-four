@@ -3,11 +3,12 @@ import AnimateHeight from "react-animate-height"
 import { CircularProgress } from "@material-ui/core"
 
 import { faCopy } from "@fortawesome/free-regular-svg-icons"
+import { faCheck } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { createRoom } from "../utils/socket"
 
-const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart }) => {
+const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart, gameStart }) => {
     const [height, setHeight] = useState(0)
     const [copySuccess, setCopySuccess] = useState("")
     const inputRef = useRef(null)
@@ -61,9 +62,17 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                     }
                 </div>
                 <AnimateHeight height={height} className="w-full">
-                    <div className="flex flex-col items-center">
-                        <CircularProgress color={"inherit"} size={28} thickness={5.4} />
-                        <span className="text-sm text-gray-800 mt-2 mb-4">Waiting for a player to join</span>
+                    <div className="flex flex-col items-center text-blue-600">
+                        {gameStart
+                            ? <FontAwesomeIcon icon={faCheck} className="text-3xl text-green-600" />
+                            : <CircularProgress color={"inherit"} size={28} thickness={5.4} />
+                        }
+                        <span className="text-sm text-gray-800 mt-2 mb-4">
+                            {gameStart
+                                ? "Player joined. Starting game..."
+                                : "Waiting for a player to join" 
+                            }
+                        </span>
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
                         <div className="flex items-center w-full mb-4">
                             <input ref={inputRef} className="focus:outline-none text-blue-500 w-full pb-1 border-b-2 mr-4" value={`http://localhost:3000/${roomID}`} readOnly></input>

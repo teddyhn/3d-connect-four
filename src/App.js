@@ -107,7 +107,9 @@ const App = () => {
     })
 
     socket.once("startGame", () => {
-      setShowMenu(false)
+      setTimeout(() => {
+        setShowMenu(false)
+      }, 2000)
       setLocalGameStart(false)
       setGameStart(true)
     })
@@ -136,6 +138,7 @@ const App = () => {
     })
 
     socket.off("gameWon").on("gameWon", (data) => {
+      setCurrentTurn(false)
       setGameEnd(true)
       setGameStart(false)
 
@@ -150,6 +153,8 @@ const App = () => {
 
   const handleClick = (e, i, j) => {
     e.stopPropagation()
+
+    console.log(currentTurn)
 
     if (!currentTurn) return
 
@@ -182,15 +187,21 @@ const App = () => {
     setRoomID("")
   }
 
+  const rematch = () => {
+    setGrid(updateGrid())
+    setGameStart(true)
+    setGameEnd(false)
+  }
+
   return (
     <>
       <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} />
       {!id && showMenu
-        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
+        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} gameStart={gameStart} />
         : null
       }
       {gameEnd || gameAbandoned
-        ? <GameEnd gameWon={gameWon} gameAbandoned={gameAbandoned} resetBoard={resetBoard} roomID={roomID} />
+        ? <GameEnd rematch={rematch} gameWon={gameWon} gameAbandoned={gameAbandoned} resetBoard={resetBoard} roomID={roomID} />
         : null
       }
       {localGameEnd
