@@ -8,12 +8,13 @@ import { softShadows, OrbitControls } from "drei"
 import useHover from "./hooks/useHover"
 // Utils
 import checkWin from "./utils/checkWin"
-import { socket, joinRoom, disconnect, checkValidRoom, playerTurn } from "./utils/socket"
+import { socket, joinRoom, checkValidRoom, playerTurn } from "./utils/socket"
 // Components
 import Header from "./components/Header"
 import Menu from "./components/Menu"
 import GameEnd from "./components/GameEnd"
 import LocalGameEnd from "./components/LocalGameEnd"
+import InvalidRoom from "./components/InvalidRoom"
 import Tile from "./components/Tile"
 import Ball from "./components/Ball"
 import Outline from "./components/Outline"
@@ -60,13 +61,14 @@ const App = () => {
   const [updated, setUpdated] = useState(0)
   const [gameStart, setGameStart] = useState(false)
   const [currentTurn, setCurrentTurn] = useState(false)
+  const [invalidRoom, setInvalidRoom] = useState(false)
 
-  const [singlePlayer, setSinglePlayer] = useState(true)
   const [localGameStart, setLocalGameStart] = useState(false)
   const [localGameEnd, setLocalGameEnd] = useState(false)
 
   const [gameEnd, setGameEnd] = useState(false)
   const [gameWon, setGameWon] = useState(false)
+  const [gameAbandoned, setGameAbandoned] = useState(false)
 
   const { id } = useParams()
 
@@ -74,15 +76,12 @@ const App = () => {
     // Initialize grid on render
     setGrid(updateGrid())
 
-    if (id) {
-      setRoomID(id)
+    if (id && id.length === 5) {
       joinRoom(id)
       checkValidRoom(id)
       setColor("red")
-      setSinglePlayer(false)
+      setLocalGameStart(false)
     }
-
-    return () => disconnect()
   }, [id])
 
   const getOppositeColor = (color) => {
@@ -92,14 +91,14 @@ const App = () => {
 
   // Check for wins in local mode
   useEffect(() => {
-    if (singlePlayer && currentTurn) {
+    if (localGameStart && currentTurn) {
       if (checkWin(grid, getOppositeColor(color))) {
         setLocalGameEnd(true)
         setLocalGameStart(false)
         setCurrentTurn(false)
       }
     }
-  }, [grid, color, currentTurn, singlePlayer])
+  }, [grid, color, currentTurn, localGameStart])
 
   // Handle socket.io events
   useEffect(() => {
@@ -108,13 +107,25 @@ const App = () => {
     })
 
     socket.once("startGame", () => {
-      setShowMenu(false)
-      setSinglePlayer(false)
+      setTimeout(() => {
+        setShowMenu(false)
+      }, 2000)
+      setLocalGameStart(false)
+      setGameStart(true)
     })
 
-    socket.once("validRoom", () => {
+    socket.once("validRoom", (data) => {
+      setRoomID(data.id)
       setShowMenu(false)
       setGameStart(true)
+    })
+
+    socket.once("invalidRoom", () => {
+      setInvalidRoom(true)
+    })
+
+    socket.once("assignColor", (data) => {
+      setColor(data.color)
     })
 
     socket.off("yourTurn").on("yourTurn", () => {
@@ -127,15 +138,23 @@ const App = () => {
     })
 
     socket.off("gameWon").on("gameWon", (data) => {
+      setCurrentTurn(false)
       setGameEnd(true)
       setGameStart(false)
 
       data === color ? setGameWon(true) : setGameWon(false)
     })
+
+    socket.off("roomAbandoned").on("roomAbandoned", () => {
+      socket.emit("leaveRoom", roomID)
+      setGameAbandoned(true)
+    })
   })
 
   const handleClick = (e, i, j) => {
     e.stopPropagation()
+
+    console.log(currentTurn)
 
     if (!currentTurn) return
 
@@ -143,7 +162,7 @@ const App = () => {
       return
     }
 
-    if (singlePlayer) {
+    if (localGameStart) {
       color === "blue" ? setColor("red") : setColor("blue")
       setGrid(updateGrid(grid, { row: j, column: i, color: color, timestamp: Date.now() }))
     }
@@ -158,26 +177,39 @@ const App = () => {
   }
 
   const resetBoard = () => {
+    setGameStart(false)
     setGameEnd(false)
+    setGameAbandoned(false)
     setLocalGameEnd(false)
+    setInvalidRoom(false)
     setShowMenu(true)
     setGrid(updateGrid())
     setRoomID("")
   }
 
+  const rematch = () => {
+    setGrid(updateGrid())
+    setGameStart(true)
+    setGameEnd(false)
+  }
+
   return (
     <>
-      <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} singlePlayer={singlePlayer} />
-      {showMenu
-        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} />
+      <Header roomID={roomID} color={color} currentTurn={currentTurn} gameStart={gameStart} localGameStart={localGameStart} />
+      {!id && showMenu
+        ? <Menu roomID={roomID} setRoomID={setRoomID} setShowMenu={setShowMenu} setCurrentTurn={setCurrentTurn} setLocalGameStart={setLocalGameStart} gameStart={gameStart} />
         : null
       }
-      {gameEnd
-        ? <GameEnd gameWon={gameWon} resetBoard={resetBoard} />
+      {gameEnd || gameAbandoned
+        ? <GameEnd rematch={rematch} gameWon={gameWon} gameAbandoned={gameAbandoned} resetBoard={resetBoard} roomID={roomID} />
         : null
       }
       {localGameEnd
         ? <LocalGameEnd color={getOppositeColor(color)} resetBoard={resetBoard} />
+        : null
+      }
+      {invalidRoom
+        ? <InvalidRoom resetBoard={resetBoard} />
         : null
       }
       <Canvas
@@ -227,7 +259,12 @@ const App = () => {
           </Outline>
           
         </group>
-        <OrbitControls />
+        <OrbitControls
+          enablePan={false}
+          minDistance={7.5}
+          maxDistance={15}
+          maxPolarAngle={Math.PI/2.1}
+        />
       </Canvas>
     </>
   )

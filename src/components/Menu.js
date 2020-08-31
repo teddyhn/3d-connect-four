@@ -2,9 +2,13 @@ import React, { useState, useRef } from "react"
 import AnimateHeight from "react-animate-height"
 import { CircularProgress } from "@material-ui/core"
 
+import { faCopy } from "@fortawesome/free-regular-svg-icons"
+import { faCheck } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
 import { createRoom } from "../utils/socket"
 
-const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart }) => {
+const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStart, gameStart }) => {
     const [height, setHeight] = useState(0)
     const [copySuccess, setCopySuccess] = useState("")
     const inputRef = useRef(null)
@@ -44,7 +48,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         ? <button onClick={handleOpen} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
                             Invite a Friend
                           </button>
-                        : <button className="bg-blue-500 text-white font-bold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
+                        : <button className="bg-blue-500 text-white font-semibold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
                             Invite a Friend
                           </button>
                     }
@@ -52,19 +56,27 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         ? <button onClick={handleLocalPlay} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 border border-gray-400 focus:outline-none rounded shadow">
                             Local Play (Demo)
                           </button>
-                        : <button className="bg-blue-500 text-white font-bold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
+                        : <button className="bg-blue-500 text-white font-semibold py-2 px-4 border border-gray-400 rounded opacity-50 cursor-not-allowed focus:outline-none">
                             Local Play (Demo)
                           </button>
                     }
                 </div>
                 <AnimateHeight height={height} className="w-full">
                     <div className="flex flex-col items-center text-blue-600">
-                        <CircularProgress color={"inherit"} size={28} thickness={5.4} />
-                        <span className="text-sm text-gray-800 mt-2 mb-4">Waiting for a player to join</span>
+                        {gameStart
+                            ? <FontAwesomeIcon icon={faCheck} className="text-3xl text-green-600" />
+                            : <CircularProgress color={"inherit"} size={28} thickness={5.4} />
+                        }
+                        <span className="text-sm text-gray-800 mt-2 mb-4">
+                            {gameStart
+                                ? "Player joined. Starting game..."
+                                : "Waiting for a player to join" 
+                            }
+                        </span>
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
-                        <div className="flex w-full mb-4">
+                        <div className="flex items-center w-full mb-4">
                             <input ref={inputRef} className="focus:outline-none text-blue-500 w-full pb-1 border-b-2 mr-4" value={`http://localhost:3000/${roomID}`} readOnly></input>
-                            {document.queryCommandSupported('copy') && <button onClick={copyToClipboard} className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-semibold py-1 px-2 border border-gray-400 rounded focus:outline-none">Copy</button>}
+                            {document.queryCommandSupported('copy') && <FontAwesomeIcon onClick={copyToClipboard} className="cursor-pointer text-2xl text-blue-600 hover:text-blue-700" icon={faCopy} />}
                         </div>
                         <button onClick={handleClose} className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded focus:outline-none">
                             Cancel
