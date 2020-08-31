@@ -38,7 +38,7 @@ const GameEnd = ({ rematch, gameWon, gameAbandoned, resetBoard, roomID }) => {
         })
 
         if (gameAbandoned) setHeight(0)
-    }, [gameAbandoned])
+    }, [gameAbandoned, rematch])
 
     const handleBack = () => {
         socket.emit("leaveRoom", roomID)
