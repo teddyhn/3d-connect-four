@@ -81,7 +81,6 @@ const App = () => {
     if (id && id.length === 5) {
       joinRoom(id)
       checkValidRoom(id)
-      setColor("red")
       setLocalGameStart(false)
     }
   }, [id])
@@ -160,8 +159,6 @@ const App = () => {
 
   const handleClick = (e, i, j) => {
     e.stopPropagation()
-
-    console.log(currentTurn)
 
     if (!currentTurn) return
 
