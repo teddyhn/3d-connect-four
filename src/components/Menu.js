@@ -40,7 +40,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
 
     return (
         <div className="absolute w-full h-full flex items-center">
-            <div className="z-10 mx-auto bg-white text-gray-800 shadow-lg py-6 px-12 rounded flex flex-col items-center">
+            <div className="z-10 mx-auto bg-white text-gray-800 shadow-lg py-6 px-10 rounded flex flex-col items-center" style={{ minWidth: "450px" }}>
                 <span className="font-bold text-2xl mb-1">3D Connect Four</span>
                 <span className="text-gray-600 text-sm mb-6">Play Connect Four... in 3D!</span>
                 <div className="flex mb-6">
@@ -75,7 +75,7 @@ const Menu = ({ setShowMenu, setCurrentTurn, roomID, setRoomID, setLocalGameStar
                         </span>
                         <span className="text-sm text-gray-800 mt-2 mb-2">{copySuccess ? copySuccess : "Copy the link below and send it to a friend:"}</span>
                         <div className="flex items-center w-full mb-4">
-                            <input ref={inputRef} style={{ minWidth: "300px"}} className="focus:outline-none text-blue-500 pb-1 border-b-2 mr-4" value={`https://3d-connect-four.netlify.app/${roomID}`} readOnly></input>
+                            <input ref={inputRef} style={{ minWidth: "300px"}} className="focus:outline-none text-blue-500 pb-1 border-b-2 mx-4" value={`https://3d-connect-four.netlify.app/${roomID}`} readOnly></input>
                             {document.queryCommandSupported('copy') && <FontAwesomeIcon onClick={copyToClipboard} className="cursor-pointer text-2xl text-blue-600 hover:text-blue-700" icon={faCopy} />}
                         </div>
                         <button onClick={handleClose} className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-4 border border-blue-600 hover:border-transparent rounded focus:outline-none">
